@@ -309,6 +309,7 @@ editForm.addEventListener("submit", function(evt) {
       localStorage.setItem("products", JSON.stringify(products));
       editForm.reset();
       editProductModal.hide();
+      
       renderProducts();
   }
 });

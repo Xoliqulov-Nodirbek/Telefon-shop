@@ -95,20 +95,20 @@ const renderProduct = function(product) {
   // ------- Edit --------
   const elCardBodyBtnEdit = createElement("button", "btn rounded-0 btn-secondary");
   const elCardBodyBtnEditI = createElement("i", "fa-solid fa-pen");
-  elCardBodyBtnEditI.pointerEvents = "none";
   elCardBodyBtnEdit.setAttribute("data-bs-toggle", "modal"),
   elCardBodyBtnEdit.setAttribute("data-bs-target", "#edit-student-modal"),
   elCardBodyBtnEdit.setAttribute("data-id", product.id),
+  elCardBodyBtnEditI.style.pointerEvents = "none";
   elCardBodyBtnEdit.append(elCardBodyBtnEditI);
   elCardBodyBtnWrapper.append(elCardBodyBtnEdit);
   
   // ------- Delete --------
   const elCardBodyBtnDelete = createElement("button", "btn rounded-0 btn-danger");
   const elCardBodyBtnDeleteI = createElement("i", "fa-solid fa-trash");
+  elCardBodyBtnDelete.setAttribute("data-id", product.id);  
   elCardBodyBtnDeleteI.style.pointerEvents = "none";
   elCardBodyBtnDelete.append(elCardBodyBtnDeleteI);
   elCardBodyBtnWrapper.append(elCardBodyBtnDelete);
-  elCardBodyBtnDelete.setAttribute("data-id", product.id);  
   
   
   
@@ -244,6 +244,7 @@ const editProductModal = new bootstrap.Modal(editProductModalEL);
 
 const editTitle = document.querySelector("#edit-product-title");
 const editPrice = document.querySelector("#edit-price");
+const editSelect = document.querySelector("#edit-product-manufacturer")
 
 elProductsWrapper.addEventListener("click", function(evt) {
   if (evt.target.matches(".btn-danger")) {
@@ -271,45 +272,45 @@ elProductsWrapper.addEventListener("click", function(evt) {
     
     editTitle.value = clickedItemIndex.title;
     editPrice.value = clickedItemIndex.price;
+    editSelect.value = clickedItemIndex.manufacturers;
     
     editForm.setAttribute("data-editing-id", clickedItemIndex)
   }
   
-  editForm.addEventListener("submit", function(evt) {
-    evt.preventDefault();
-    
-    const elements = evt.target.elements;
-    const editingItemId = +elements.dataset.editingId;
-    
-    const editManufacturerSelect = elements["edit-product-manufacturer"];
-    
-    const editProductTitleInputValue = editTitle.value;
-    const editPriceInputValue = +editPrice.value;
-    const editManufacturerSelectValue = editManufacturerSelect.value;
-    
-    if (editProductTitleInputValue.trim() && editPriceInputValue.trim() && editManufacturerSelectValue.trim()) {
-      const newCard = {
-        id: editingItemId,
-        title: editProductTitleInputValue,
-        img: "https://picsum.photos/300/200",
-        price: editPriceInputValue,
-        benefits: [],
-        model: editManufacturerSelectValue,
-        addedDate: new Date().toISOString(),
-      }
+});
+
+editForm.addEventListener("submit", function(evt) {
+  evt.preventDefault();
+  
+  
+  const editingItemId = +evt.target.dataset.editingId;
+  
+  const editTitleValue = editTitle.value;
+  const editPriceValue = editPrice.value;
+  const editSelectValue = editSelect.value;
+  
+  if (editTitleValue.trim() && editPriceValue.trim() && editSelectValue) {
+    const EditedCard = {
+      id: editingItemId,
+      title: editTitleValue,
+      img: "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-13-pro-family-hero?wid=300&hei=200&fmt=png-alpha&.v=1644969385433",
+      price: editPriceValue,
+      benefits: [],
+      model: editSelectValue,
+      addedDate: new Date().toISOString(),
+    }
       
       const editingItemIndex = products.findIndex(function (element) {
-        return element.id == editingItemId; 
+          return element.id == editingItemId; 
       });
       
-      products.splice(editingItemIndex, 1, newCard);
+      products.splice(editingItemIndex, 1, EditedCard);
+      showingProducts.splice(editingItemIndex, 1, EditedCard);
       localStorage.setItem("products", JSON.stringify(products));
       editForm.reset();
       editProductModal.hide();
-      renderProducts(newCard);
-    }
-  });
-  
+      renderProducts();
+  }
 });
 
 
